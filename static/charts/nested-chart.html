@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Nested Pie Chart</title>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+    }
+
+    #myChart {
+      height: 100%;
+      width: 100%;
+      min-height: 530px;
+    }
+
+    .zc-ref {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="myChart"></div>
+
+  <script>
+    const obj = JSON.parse(localStorage.getItem('testObject')) || {};
+    const state_arr = obj.state || [];
+    const year_arr = (obj.year || []).map(Number);
+    const crime = obj.crime_type ? obj.crime_type[obj.crime_type.length - 1] : "MURDER";
+
+    const yearDataMap = {};
+    let fetchedCount = 0;
+
+    year_arr.forEach(year => {
+      fetch(`/data/${year}`)
+        .then(res => res.json())
+        .then(data => {
+          yearDataMap[year] = data;
+          fetchedCount++;
+          if (fetchedCount === year_arr.length) {
+            renderChart();
+          }
+        });
+    });
+
+    function renderChart() {
+      const series_new = [];
+
+      state_arr.forEach(state => {
+        const values = [];
+
+        year_arr.forEach(year => {
+          const dataForYear = yearDataMap[year];
+          const entry = dataForYear.find(
+            item => item.STATE_UT.toUpperCase() === state.toUpperCase()
+          );
+          values.push(entry ? entry[crime] : 0);
+        });
+
+        series_new.push({
+          text: state,
+          values: values
+        });
+      });
+
+      const chartConfig = {
+        type: 'nestedpie',
+        title: {
+          text: `Crime Breakdown: ${crime.replace(/_/g, ' ')}`
+        },
+        legend: {
+          borderColor: 'gray',
+          borderWidth: '1px',
+          borderRadius: '5px',
+          header: {
+            text: 'States',
+            fontColor: 'purple',
+            fontSize: '14px'
+          },
+          item: {
+            fontColor: 'black',
+            fontSize: '12px'
+          },
+          toggleAction: 'remove'
+        },
+        plot: {
+          dataYear: year_arr.map(String),
+          valueBox: {
+            text: '%data-year',
+            fontColor: 'white',
+            fontSize: '12px'
+          },
+          tooltip: {
+            text: `%data-year<br>%t: %v ${crime.replace(/_/g, ' ')}`
+          },
+          animation: {
+            effect: 'ANIMATION_EXPAND_LEFT',
+            method: 'ANIMATION_BACK_EASE_OUT',
+            sequence: 'ANIMATION_BY_PLOT',
+            speed: 700
+          }
+        },
+        series: series_new
+      };
+
+      ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+
+      zingchart.render({
+        id: 'myChart',
+        data: chartConfig,
+        height: "100%",
+        width: "100%"
+      });
+    }
+  </script>
+</body>
+</html>

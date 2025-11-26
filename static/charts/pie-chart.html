@@ -1,1 +1,189 @@
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pie Chart</title>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+    }
 
+    #myChart {
+      height: 100%;
+      width: 100%;
+      min-height: 400px;
+    }
+
+    .zc-ref {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id='myChart'></div>
+
+  <script>
+    const obj = JSON.parse(localStorage.getItem('testObject')) || {};
+    const state_arr = obj.state || [];
+    const year = (obj.year || []).map(Number).pop(); // Last selected year
+    const crime = obj.crime_type ? obj.crime_type[obj.crime_type.length - 1] : "MURDER";
+
+    fetch(`/data/${year}`)
+      .then(res => res.json())
+      .then(data => {
+        const series_new = [];
+
+        state_arr.forEach(state => {
+          const entry = data.find(
+            item => item.STATE_UT.toUpperCase() === state.toUpperCase()
+          );
+          if (entry) {
+            series_new.push({
+              text: state,
+              values: [entry[crime]]
+            });
+          }
+        });
+
+        const myConfig = {
+          type: "pie3d",
+          title: {
+            text: `Crime Distribution (${crime.replace(/_/g, ' ')}) in ${year}`
+          },
+          legend: {
+            layout: "vertical",
+            align: "right",
+            verticalAlign: "middle",
+            toggleAction: "remove"
+          },
+          plot: {
+            tooltip: {
+              text: "%t: %v cases"
+            },
+            valueBox: {
+              placement: 'out',
+              text: '%t (%v)',
+              fontSize: 12
+            }
+          },
+          series: series_new
+        };
+
+        ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+
+        zingchart.render({
+          id: 'myChart',
+          data: myConfig,
+          height: 400,
+          width: "100%"
+        });
+      });
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pie Charts by Year</title>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #f9f9f9;
+    }
+    .chart-container {
+      padding: 20px;
+    }
+    .single-chart {
+      margin-bottom: 50px;
+    }
+    .chart-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .zc-ref {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="chart-container" id="chartContainer"></div>
+
+  <script>
+    const obj = JSON.parse(localStorage.getItem('testObject')) || {};
+    const state_arr = obj.state || [];
+    const year_arr = (obj.year || []).map(Number);
+    const crime = obj.crime_type ? obj.crime_type[obj.crime_type.length - 1] : "MURDER";
+
+    year_arr.forEach((year, index) => {
+      fetch(`/data/${year}`)
+        .then(res => res.json())
+        .then(data => {
+          const series = [];
+
+          state_arr.forEach(state => {
+            const entry = data.find(
+              item => item.STATE_UT.toUpperCase() === state.toUpperCase()
+            );
+            if (entry) {
+              series.push({
+                text: state,
+                values: [entry[crime]]
+              });
+            }
+          });
+
+          const chartId = `myChart${index}`;
+          const container = document.getElementById('chartContainer');
+
+          // Create div for chart
+          const chartDiv = document.createElement('div');
+          chartDiv.className = 'single-chart';
+          chartDiv.innerHTML = `
+            <div class="chart-title">${crime.replace(/_/g, ' ')} Cases in ${year}</div>
+            <div id="${chartId}" style="height:400px; width:100%;"></div>
+          `;
+          container.appendChild(chartDiv);
+
+          // Render the chart
+          zingchart.render({
+            id: chartId,
+            data: {
+              type: "pie3d",
+              title: { text: "" },
+              legend: {
+                layout: "vertical",
+                align: "right",
+                verticalAlign: "middle",
+                toggleAction: "remove"
+              },
+              plot: {
+                tooltip: {
+                  text: "%t: %v cases"
+                },
+                valueBox: {
+                  placement: 'out',
+                  text: '%t (%v)',
+                  fontSize: 12
+                }
+              },
+              series: series
+            },
+            height: 400,
+            width: "100%"
+          });
+        });
+    });
+  </script>
+</body>
+</html>

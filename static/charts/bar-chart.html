@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>ZingSoft Demo</title>
+
+
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+
+  <style>
+    html,
+    body,
+    #myChart {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id='myChart'>
+  </div>
+
+
+  <script>
+   var retrievedObject = localStorage.getItem('testObject');
+obj = JSON.parse(retrievedObject);
+
+var state_arr = obj.state;
+var year_arr = obj.year;
+var crime = obj.crime_type[obj.crime_type.length - 1];
+
+var promises = year_arr.map(y => fetch(`/data/${y}`).then(res => res.json()));
+
+Promise.all(promises).then(allYearData => {
+  var series_new = [];
+
+  for (let i = 0; i < state_arr.length; i++) {
+    let element = {
+      values: [],
+      text: state_arr[i] 
+    };
+
+    for (let j = 0; j < allYearData.length; j++) {
+      let stateData = allYearData[j].find(entry => entry.STATE_UT.toUpperCase() === state_arr[i].toUpperCase());
+      if (stateData) {
+        element.values.push(stateData[crime.toUpperCase()]);
+      } else {
+        element.values.push(0);
+      }
+    }
+
+    series_new.push(element);
+  }
+
+  zingchart.render({
+    id: 'myChart',
+    data: {
+      type: 'bar',
+      plot: {
+        valueBox: {
+          placement: "top",
+          text: "%v %t",
+          fontColor: "black",
+          fontSize: 12
+        }
+      },
+      scaleX: {
+        label: { text: 'Year' },
+        labels: year_arr
+      },
+      scaleY: {
+        label: { text: 'Crime Count' }
+      },
+      series: series_new
+    },
+    height: "100%",
+    width: "100%"
+  });
+});
+</script>
+</body>
+
+</html>

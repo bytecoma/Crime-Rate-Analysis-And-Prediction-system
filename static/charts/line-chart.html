@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Line Chart</title>
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+    }
+    #myChart {
+      height: 100%;
+      width: 100%;
+      min-height: 150px;
+    }
+    .zc-ref {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id='myChart'></div>
+
+  <script>
+    const obj = JSON.parse(localStorage.getItem('testObject'));
+    const state_arr = obj.state;
+    const year_arr = obj.year.map(Number);
+    const crime = obj.crime_type[obj.crime_type.length - 1];
+
+    const yearDataMap = {};
+    let dataFetchCount = 0;
+
+    function fetchYearData(year) {
+      return fetch(`/data/${year}`)
+        .then(res => res.json())
+        .then(data => {
+          yearDataMap[year] = data;
+          dataFetchCount++;
+          if (dataFetchCount === year_arr.length) {
+            renderChart();
+          }
+        });
+    }
+
+    year_arr.forEach(fetchYearData);
+
+    function renderChart() {
+      const series_new = [];
+
+      state_arr.forEach((state, idx) => {
+        const values = year_arr.map(year => {
+          const yearData = yearDataMap[year];
+          const entry = yearData.find(
+            e => e.STATE_UT.toUpperCase() === state.toUpperCase()
+          );
+          return entry ? entry[crime] : 0;
+        });
+
+        series_new.push({
+          values: values,
+          text: state,
+          lineColor: getColor(idx),
+          marker: {
+            backgroundColor: getColor(idx),
+            borderColor: "#fff",
+            borderWidth: 2
+          }
+        });
+      });
+
+      ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "b55b025e438fa8a98e32482b5f768ff5"];
+      const config = {
+        type: "line",
+        title: {
+          text: `Crime Trend: ${crime.replace(/_/g, ' ')}`,
+          fontSize: 24
+        },
+        legend: {
+          layout: "horizontal",
+          align: "center",
+          verticalAlign: "bottom",
+          borderWidth: 1,
+          item: {
+            fontSize: 14
+          }
+        },
+        scaleX: {
+          labels: year_arr.map(String),
+          label: { text: "Year" }
+        },
+        scaleY: {
+          label: { text: "Cases" }
+        },
+        plot: {
+          marker: {
+            type: "circle",
+            size: 4
+          }
+        },
+        series: series_new
+      };
+
+      zingchart.render({
+        id: 'myChart',
+        data: config,
+        height: "100%",
+        width: "100%"
+      });
+    }
+
+    function getColor(index) {
+      const colors = [
+        "#007790", "#da534d", "#009872", "#f9a825", "#6a1b9a",
+        "#c2185b", "#0288d1", "#388e3c", "#f57c00", "#5d4037"
+      ];
+      return colors[index % colors.length];
+    }
+  </script>
+</body>
+</html>
