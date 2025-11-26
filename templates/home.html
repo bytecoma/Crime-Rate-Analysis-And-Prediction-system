@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Webpage Design</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/home.css')}}?v={{ time }}">
+</head>
+<body>
+
+    <!-- heading -->
+  <div class="heading">
+    
+    <!-- mainhp for heading and paragraph -->
+    <div class="mainhp">
+      <h1 id="mainh">CRIME &nbsp; RATE<br> ANALYSIS AND <br> PREDICTION  &nbsp; SYSTEM</h1>
+      <div class="contain">
+        <p class="par">
+         "This system is a data driven analytical platform design to visualize and predict crime trends across Indian states.
+         It provides the users an interactive dashboard.
+         Users here can select the years, states, and types of crime to view corresponding statics on a data driven map.
+         Additionally, a charts based module  allows users to compare crime trends across multiple years and states using bar-charts, line-charts, nested-pie-charts, pie-charts.
+         The system emphasis accessibility, interpretability and visualizalion making it a powerful tool for public awareness and policy level insights."
+        </p>
+        
+      </div>
+    </div>
+
+    <!-- Dashboard form section -->
+    <div class="form">
+      <h2 style="text-align: center; font-weight: 700; padding-top: 20px;">DASHBOARD</h2>
+      <button class="btnn" onclick="navigateTo('/dashboard')">CRIME ANALYSIS</button>
+      <button class="btnn" onclick="navigateTo('/charts')">CRIME CHARTS</button>
+      <button class="btnn" onclick="navigateTo('/prediction')">CRIME PREDICTION</button> 
+    </div>
+
+  </div>
+
+    <script>
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+    </script>
+    
+</body>
+</html>
+
+
+
+

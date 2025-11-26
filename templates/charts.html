@@ -1,1 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crime</title>
+    <link rel="stylesheet" href="{{url_for('static',filename='css/charts.css')}}?v={{ time }}">
+</head>
+<body>
+    <!-- heading -->
+    <div class="heading">
+        <h1 id="mainh">Crime Rate Analysis and Prediction</h1>
+        <button type="button" id="backtohome" onclick="goHome()">Back to Home</button>
+    </div>
+    <br>
 
+    <!-- Controls Row -->
+    <div class="controls-row">
+      <!-- <div class="dropdown" id="yearDropdown">
+        <button onclick="toggleDropdown('yearDropdown')">SELECT YEAR</button>
+        <div class="dropdown-content">
+            <label><input type="checkbox" value="2001"> 2001</label>
+            <label><input type="checkbox" value="2002"> 2002</label>
+            <label><input type="checkbox" value="2003"> 2003</label>
+            <label><input type="checkbox" value="2004"> 2004</label>
+            <label><input type="checkbox" value="2005"> 2005</label>
+            <label><input type="checkbox" value="2006"> 2006</label>
+            <label><input type="checkbox" value="2007"> 2007</label>
+            <label><input type="checkbox" value="2008"> 2008</label>
+            <label><input type="checkbox" value="2009"> 2009</label>
+            <label><input type="checkbox" value="2010"> 2010</label>
+            <label><input type="checkbox" value="2011"> 2011</label>
+            <label><input type="checkbox" value="2012"> 2012</label>
+        </div>
+      </div> -->
+
+      <div id="yearRange">
+        <div class="label-box"><label>SELECT YEARS</label></div>
+        <label>From: <input type="number" id="startYear" min="2001" max="2012" placeholder="2001"></label>
+        <label>To: <input type="number" id="endYear" min="2001" max="2012" placeholder="2012"></label>
+      </div>
+
+      <select name="Type" id="Type">
+        <option value="" selected disabled>CRIME TYPE</option>
+        <option value="MURDER">MURDER</option>
+        <option value="KIDNAPPING_AND_ABDUCTION">KIDNAPPING_AND_ABDUCTION</option>
+        <option value="ROBBERY">ROBBERY</option>
+        <option value="RAPE">RAPE</option>
+      </select>
+
+      <!-- state Drowdoown -->
+  <div class="dropdown" id="stateDropdown">
+    <button onclick="toggleDropdown('stateDropdown')">STATE</button>
+    <div class="dropdown-content">
+        <label><input type="checkbox" value="Andhra Pradesh"> Andhra Pradesh</label>
+        <label><input type="checkbox" value="Arunachal Pradesh"> Arunachal Pradesh</label>
+        <label><input type="checkbox" value="Assam"> Assam</label>
+        <label><input type="checkbox" value="Bihar"> Bihar</label>
+        <label><input type="checkbox" value="Chhattisgarh"> Chhattisgarh</label>
+        <label><input type="checkbox" value="Goa"> Goa</label>
+        <label><input type="checkbox" value="Gujarat"> Gujarat</label>
+        <label><input type="checkbox" value="Haryana"> Haryana</label>
+        <label><input type="checkbox" value="Himachal Pradesh"> Himachal Pradesh</label>
+        <label><input type="checkbox" value="Jammu and Kashmir"> Jammu and Kashmir</label>
+        <label><input type="checkbox" value="Jharkhand"> Jharkhand</label>
+        <label><input type="checkbox" value="Karnataka"> Karnataka</label>
+        <label><input type="checkbox" value="Kerala"> Kerala</label>
+        <label><input type="checkbox" value="Madhya Pradesh"> Madhya Pradesh</label>
+        <label><input type="checkbox" value="Maharashtra"> Maharashtra</label>
+        <label><input type="checkbox" value="Manipur"> Manipur</label>
+        <label><input type="checkbox" value="Meghalaya"> Meghalaya</label>
+        <label><input type="checkbox" value="Mizoram"> Mizoram</label>
+        <label><input type="checkbox" value="Nagaland"> Nagaland</label>
+        <label><input type="checkbox" value="Odisha"> Odisha</label>
+        <label><input type="checkbox" value="Punjab"> Punjab</label>
+        <label><input type="checkbox" value="Rajasthan"> Rajasthan</label>
+        <label><input type="checkbox" value="Sikkim"> Sikkim</label>
+        <label><input type="checkbox" value="Tamil Nadu"> Tamil Nadu</label>
+        <label><input type="checkbox" value="Telangana"> Telangana</label>
+        <label><input type="checkbox" value="Tripura"> Tripura</label>
+        <label><input type="checkbox" value="Uttar Pradesh"> Uttar Pradesh</label>
+        <label><input type="checkbox" value="Uttarakhand"> Uttarakhand</label>
+        <label><input type="checkbox" value="West Bengal"> West Bengal</label>
+        <label><input type="checkbox" value="Andaman and Nicobar Islands"> Andaman and Nicobar Islands</label>
+        <label><input type="checkbox" value="Chandigarh"> Chandigarh</label>
+        <label><input type="checkbox" value="Dadra and Nagar Haveli"> Dadra and Nagar Haveli</label>
+        <label><input type="checkbox" value="Daman and Diu"> Daman and Diu</label>
+        <label><input type="checkbox" value="Lakshadweep"> Lakshadweep</label>
+        <label><input type="checkbox" value="Delhi"> Delhi</label>
+        <label><input type="checkbox" value="Puducherry"> Puducherry</label>
+    </div>
+</div>
+
+      <button type="button" id="show">SHOW</button>
+    </div>
+
+    <!-- charts buttons and chart area -->
+    <div class="container">
+        <div class="sidebar">
+            <button type="button" id="bar">BAR CHART</button>
+            <button type="button" id="line">LINE CHART</button>
+            <button type="button" id="nestedpie">NESTED PIE CHART</button>
+            <button type="button" id="pie">PIE CHART</button>
+        </div> 
+        <div class="plot-area">
+            <iframe id="chartFrame" src="/static/Charts/map.html" width="100%" height="600" frameborder="0" style="border-radius: 8px;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(id) {
+            let dropdown = document.getElementById(id);
+            dropdown.classList.toggle('active');
+        }
+
+        document.addEventListener("click", function(event) {
+            let dropdowns = document.querySelectorAll(".dropdown");
+            dropdowns.forEach(dropdown => {
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove("active");
+                }
+            });
+        });
+
+        document.getElementById("bar").addEventListener("click", function () {
+            document.getElementById("chartFrame").src = "/static/Charts/bar-chart.html";
+        });
+
+        document.getElementById("line").addEventListener("click", function () {
+            document.getElementById("chartFrame").src = "/static/Charts/line-chart.html";
+        });
+
+        document.getElementById("nestedpie").addEventListener("click", function () {
+            document.getElementById("chartFrame").src = "/static/Charts/nested-chart.html";
+        });
+
+        document.getElementById("pie").addEventListener("click", function () {
+            document.getElementById("chartFrame").src = "/static/Charts/pie-chart.html";
+        });
+
+        document.getElementById("show").addEventListener("click", function () {
+            let selectedYears = [];
+            const startYear = parseInt(document.getElementById("startYear").value);
+            const endYear = parseInt(document.getElementById("endYear").value);
+
+            if (!isNaN(startYear) && !isNaN(endYear) && startYear <= endYear) {
+                for (let y = startYear; y <= endYear; y++) {
+                    selectedYears.push(String(y));
+                }
+            } else {
+                document.querySelectorAll("#yearDropdown input[type=checkbox]:checked").forEach(cb => {
+                    selectedYears.push(cb.value);
+                });
+            }
+
+            let selectedStates = [];
+            document.querySelectorAll("#stateDropdown input[type=checkbox]:checked").forEach(cb => selectedStates.push(cb.value));
+
+            let crimeType = document.getElementById("Type").value;
+
+            let filterObject = {
+                year: selectedYears,
+                state: selectedStates,
+                crime_type: [crimeType]
+            };
+
+            localStorage.setItem("testObject", JSON.stringify(filterObject));
+            document.getElementById("chartFrame").src = "/static/Charts";
+        });
+
+        function goHome() {
+            window.location.href = "/";
+        }
+    </script>
+</body>
+</html>

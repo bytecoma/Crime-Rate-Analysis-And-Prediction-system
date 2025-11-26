@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crime Prediction</title>
+  <link rel="stylesheet" href="{{url_for('static',filename='css/prediction.css')}}?v={{ time }}">
+</head>
+<body>
+
+  <!-- heading -->
+  <div class="heading">
+    <h1 id="mainh">CRIME RATE ANALYSIS AND PREDICTION</h1>
+    <button type="button" id="backtohome" onclick="goHome()">Back to Home</button>
+  </div>
+  <br>
+
+  <div id="container">
+    <!-- Dropdowns -->
+    <div class="dropdown-container">
+      <label for="state" style="padding-right: 88px;"> STATE:</label>
+      <select id="state">
+        <option value="" selected disabled>SELECT STATE</option>
+        <option value="ANDHRA PRADESH">ANDHRA PRADESH</option>
+        <option value="ARUNACHAL PRADESH">ARUNACHAL PRADESH</option>
+        <option value="ASSAM">ASSAM</option>
+        <option value="BIHAR">BIHAR</option>
+        <option value="CHHATTISGARH">CHHATTISGARH</option>
+        <option value="GOA">GOA</option>
+        <option value="GUJARAT">GUJARAT</option>
+        <option value="HARYANA">HARYANA</option>
+        <option value="HIMACHAL PRADESH">HIMACHAL PRADESH</option>
+        <option value="JAMMU & KASHMIR">JAMMU & KASHMIR</option>
+        <option value="JHARKHAND">JHARKHAND</option>
+        <option value="KARNATAKA">KARNATAKA</option>
+        <option value="KERALA">KERALA</option>
+        <option value="MADHYA PRADESH">MADHYA PRADESH</option>
+        <option value="MAHARASHTRA">MAHARASHTRA</option>
+        <option value="MANIPUR">MANIPUR</option>
+        <option value="MEGHALAYA">MEGHALAYA</option>
+        <option value="MIZORAM">MIZORAM</option>
+        <option value="NAGALAND">NAGALAND</option>
+        <option value="ODISHA">ODISHA</option>
+        <option value="PUNJAB">PUNJAB</option>
+        <option value="RAJASTHAN">RAJASTHAN</option>
+        <option value="SIKKIM">SIKKIM</option>
+        <option value="TAMIL NADU">TAMIL NADU</option>
+        <option value="TELANGANA">TELANGANA</option>
+        <option value="TRIPURA">TRIPURA</option>
+        <option value="UTTAR PRADESH">UTTAR PRADESH</option>
+        <option value="UTTARAKHAND">UTTARAKHAND</option>
+        <option value="WEST BENGAL">WEST BENGAL</option>
+        <option value="A & N ISLANDS">A & N ISLANDS</option>
+        <option value="CHANDIGARH">CHANDIGARH</option>
+        <option value="D & N HAVELI">D & N HAVELI</option>
+        <option value="DAMAN & DIU">DAMAN & DIU</option>
+        <option value="LAKSHADWEEP">LAKSHADWEEP</option>
+        <option value="DELHI">DELHI</option>
+        <option value="PUDUCHERRY">PUDUCHERRY</option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="crime" style="padding-right: 40px;"> CRIME TYPE:</label>
+      <select name="Type" id="Type">
+        <option value="" selected disabled>SELECT CRIME TYPE</option>
+        <option value="MURDER">MURDER</option>
+        <option value="KIDNAPPING_AND_ABDUCTION">KIDNAPPING_AND_ABDUCTION</option>
+        <option value="ROBBERY">ROBBERY</option>
+        <option value="RAPE">RAPE</option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="Year" style="padding-right: 91.5px;"> YEAR:</label>
+      <select name="Year" id="Year">
+        <option value="" selected disabled>SELECT YEAR</option>
+        <option value="1">2001</option>
+        <option value="2">2002</option>
+        <option value="3">2003</option>
+        <option value="4">2004</option>
+        <option value="5">2005</option>
+        <option value="6">2006</option>
+        <option value="7">2007</option>
+        <option value="8">2008</option>
+        <option value="9">2009</option>
+        <option value="10">2010</option>
+        <option value="11">2011</option>
+        <option value="12">2012</option>
+        <option value="13">2013</option>
+        <option value="14">2014</option>
+        <option value="15">2015</option>
+        <option value="16">2016</option>
+        <option value="17">2017</option>
+        <option value="18">2018</option>
+        <option value="19">2019</option>
+        <option value="20">2020</option>
+        <option value="21">2021</option>
+        <option value="22">2022</option>
+        <option value="23">2023</option>
+        <option value="24">2024</option>
+        <option value="25">2025</option>
+        <option value="26">2026</option>
+        <option value="27">2027</option>
+        <option value="28">2028</option>
+        <option value="29">2029</option>
+        <option value="30">2030</option>
+      </select>
+
+      <div class="dropdown-container">
+        <label for="model" style="padding-right: 77.5px;"> MODEL:</label>
+        <select id="model">
+          <option value="" selected disabled>SELECT MODEL</option>
+          <option value="linear">LINEAR REGRESSION</option>
+          <option value="tree">DECISION TREE</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
+      <button id="submit" style="display: block; margin-top: 20px; margin-left: 130px;">Submit</button>
+    </div>
+  </div>
+
+  <!-- Result Display -->
+  <section class="rcontainer" style="display: none;">
+    <table class="table3">
+      <tr class="r2">
+        <td class="result">Prediction :</td>
+        <td class="result">{{crime_status}}</td>
+      </tr>
+      <tr class="r2">
+        <td class="result">Estimated Crime Rate :</td>
+        <td class="result">{{crime_rate}}</td>
+      </tr>
+      <tr class="r2">
+        <td class="result">Estimated Number of Cases :</td>
+        <td class="result">{{cases}}</td>
+      </tr>
+      <tr class="r2">
+        <td class="result">Population (in Lakhs) :</td>
+        <td class="result">{{population}}</td>
+      </tr>
+    </table>
+  </section>
+
+  <script>
+    document.getElementById('submit').addEventListener('click', submitData);
+
+    function submitData() {
+      const state = document.getElementById('state').value;
+      const crime_type = document.getElementById('Type').value;
+      const year = document.getElementById('Year').value;
+      const model = document.getElementById('model').value;
+
+      if (!state || !crime_type || !year || !model) {
+        alert('Please select all fields');
+        return;
+      }
+
+      fetch('/predict', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ state, crime_type, year, model })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          alert("Error: " + data.error);
+          return;
+        }
+
+        const results = document.querySelectorAll('.r2 .result');
+        results[1].innerText = data.crime_status;
+        results[3].innerText = data.crime_rate;
+        results[5].innerText = data.cases;
+        results[7].innerText = data.population;
+
+        document.querySelector('.rcontainer').style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. See console for details.');
+      });
+    }
+
+    function goHome() {
+      window.location.href = "/";
+    }
+  </script>
+
+</body>
+</html>
